@@ -1,4 +1,7 @@
 import zmq
+import socket
+import fcntl
+import struct
 
 def getIpAddress(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -20,6 +23,7 @@ class messageClient:
 		#Create message forwarding connection
 		self.host = host
 		self.accountName = accountName
+                self.currentConversation = ""
 		self.context = zmq.Context()
 		self.request = self.context.socket(zmq.REQ)
 		self.request.connect("tcp://{ip}:5555".format(ip=host))
@@ -31,9 +35,13 @@ class messageClient:
 	# Send request for connection for a conversation
 	def createNewConnection(self, connectionName):
 
-		self.subscriber.setsockopt(zmq.SUBSCRIBE, b"{connectionName}".format(connectionName=connectionName))
+		self.subscriber.setsockopt(zmq.SUBSCRIBE, 
+                                           b"{connectionName}".format(connectionName=connectionName))
 
 	def sendMessage(self, host, message):
-		self.request.send_multipart([b"{host}".format(host=host), b"{name}: {message}".format(name=self.accountName, message=message)])
+		self.request.send_multipart([b"{host}".format(host=host), 
+                                             b"{name}: {message}".format(name=self.accountName, message=message)])
 		reply = self.request.recv()
 		print reply
+
+        def drawWindow(self):

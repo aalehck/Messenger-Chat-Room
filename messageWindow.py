@@ -16,19 +16,8 @@ class messageWindow:
 	def __init__(self, root, client, name):
 		self.name = name
 		self.client = client
-		self.window = Tkinter.Toplevel()
-		self.messageFrame = Tkinter.Frame(self.window)
-		self.chatBox = Tkinter.Text(self.window, height=20, width=80)
-		self.inputBox = Tkinter.Entry(self.messageFrame, width=50)
-
-		Tkinter.Label(self.messageFrame, text="Text:").grid(row=0, column=0, sticky=('W'))
-		Tkinter.Button(self.window, text='Send', command= lambda: self.enterDisplayText(self.chatBox, self.inputBox, client)).grid(row=1, column=2)
-		self.window.bind('<Return>', lambda x: self.enterDisplayText(self.chatBox, self.inputBox, self.client))
-		self.messageFrame.grid(row=1, column=0)
-		self.chatBox.grid(row=0, columnspan=2)
-		self.inputBox.grid(row=0, column=1)
-
-		self.window.title(self.name)
+                self.windowClosed = False 
+                self.text = []
 
 	def enterDisplayText(self, chatBox, inputBox, client):
 		self.chatBox.config(state="normal")
@@ -37,3 +26,27 @@ class messageWindow:
 		self.inputBox.delete(0, len(text))
 
 		self.chatBox.config(state="disabled")
+
+        def drawWindow(self):
+                self.window = Tkinter.Toplevel()
+		self.messageFrame = Tkinter.Frame(self.window)
+		self.chatBox = Tkinter.Text(self.window, height=20, width=80)
+		self.inputBox = Tkinter.Entry(self.messageFrame, width=50)
+
+		Tkinter.Label(self.messageFrame, text="Text:").grid(row=0, column=0, sticky=('W'))
+		Tkinter.Button(self.window, 
+                               text='Send', 
+                               command= lambda: self.enterDisplayText(self.chatBox, self.inputBox, client)).grid(row=1, column=2)
+		self.window.bind('<Return>', 
+                                 lambda x: self.enterDisplayText(self.chatBox, self.inputBox, self.client))
+		self.messageFrame.grid(row=1, column=0)
+		self.chatBox.grid(row=0, columnspan=2)
+		self.inputBox.grid(row=0, column=1)
+
+		self.window.title(self.name)
+                self.window.protocol("WM_DELETE_WINDOW", self.setClosed)
+
+        def setClosed(self):
+                self.windowClosed = True
+                self.window.destroy()
+                
